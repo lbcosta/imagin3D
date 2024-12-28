@@ -9,7 +9,9 @@ include_directories(libs/glfw/include)
 
 # GLAD
 include_directories(libs/glad/include)
-set(GLAD_SRC libs/glad/src/glad.c)
+set(GLAD_SRC libs/glad/src/glad.c
+        src/engine/Engine.cpp
+        src/engine/Engine.h)
 
 # Project Files
 file(GLOB PROJECT_SOURCES src/*.cpp)
