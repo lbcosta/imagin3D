@@ -10,12 +10,13 @@ class Engine {
 public:
     Engine(int window_width, int window_height);
     ~Engine();
-    void Run() const;
+    void Run();
 
 private:
     GLFWwindow* window;
-    void ProcessInput() const;
-    void Render() const;
+    void ProcessInput();
+    void Render();
+    void Triangle();
 };
 
 
