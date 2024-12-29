@@ -5,7 +5,6 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
 
 class Engine {
 public:
@@ -15,6 +14,8 @@ public:
 
 private:
     GLFWwindow* window;
+    void ProcessInput() const;
+    void Render() const;
 };
 
 
