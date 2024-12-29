@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-#include "shader_program/ShaderProgram.h"
+#include "../shader/Shader.h"
 
 Engine::Engine(const int window_width, const int window_height) {
     // Initialize GLFW
@@ -43,7 +43,7 @@ void Engine::ProcessInput() const {
 void Engine::Render() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    this->Rectangle();
+    this->Triangle();
 }
 
 void Engine::Triangle() {
@@ -111,23 +111,9 @@ void Engine::Triangle() {
         // same for VAO.
         glBindVertexArray(0);
 
-    const auto vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+    const auto shaderProgram = Shader("../src/shaders/vertex.glsl", "../src/shaders/fragment.glsl");
 
-    const auto fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0";
-
-    const auto shaderProgram = ShaderProgram::Create(vertexShaderSource, fragmentShaderSource);
-
-    glUseProgram(shaderProgram);
+    shaderProgram.use();
     glBindVertexArray(VAO);
 
     /**
@@ -192,9 +178,9 @@ void Engine::Rectangle() {
     "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
     "}\0";
 
-    const auto shaderProgram = ShaderProgram::Create(vertexShaderSource, fragmentShaderSource);
+    const auto shaderProgram = Shader(vertexShaderSource, fragmentShaderSource);
 
-    glUseProgram(shaderProgram);
+    shaderProgram.use();
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
