@@ -14,7 +14,7 @@ public:
 
 private:
     GLFWwindow* window;
-    void ProcessInput();
+    void ProcessInput() const;
     void Render();
     void Triangle();
 };

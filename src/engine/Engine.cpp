@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#include "shader_program/ShaderProgram.h"
+
 Engine::Engine(const int window_width, const int window_height) {
     // Initialize GLFW
         glfwInit();
@@ -33,7 +35,7 @@ Engine::Engine(const int window_width, const int window_height) {
     this->window = window;
 }
 
-void Engine::ProcessInput() {
+void Engine::ProcessInput() const {
     if(glfwGetKey(this->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(this->window, true);
 }
@@ -45,7 +47,7 @@ void Engine::Render() {
 }
 
 void Engine::Triangle() {
-    float vertices[] = {
+    constexpr float vertices[] = {
         -0.5f, -0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
          0.0f,  0.5f, 0.0f
@@ -109,76 +111,32 @@ void Engine::Triangle() {
         // same for VAO.
         glBindVertexArray(0);
 
-    // CREATE SHADER PROGRAM
-        // CREATE VERTEX SHADER
-            const auto *vertexShaderSource = "#version 330 core\n"
-            "layout (location = 0) in vec3 aPos;\n"
-            "void main()\n"
-            "{\n"
-            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-            "}\0";
+    const auto vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
 
-            const auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            // 1) shader object, 2) # of strings, 3) source, 4) ?
-            glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-            glCompileShader(vertexShader);
+    const auto fragmentShaderSource = "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\0";
 
-            int  success;
-            char infoLog[512];
+    const auto shaderProgram = ShaderProgram::Create(vertexShaderSource, fragmentShaderSource);
 
-            glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-            if(!success)
-            {
-                glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-                std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-            }
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
 
-        // CREATE FRAGMENT SHADER
-            const auto fragmentShaderSource = "#version 330 core\n"
-            "out vec4 FragColor;\n"
-            "void main()\n"
-            "{\n"
-            "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-            "}\0";
-
-            const auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-            glCompileShader(fragmentShader);
-
-            glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-            if(!success)
-            {
-                glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-                std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-            }
-
-        // CREATE PROGRAM
-            const auto shaderProgram = glCreateProgram();
-
-            glAttachShader(shaderProgram, vertexShader);
-            glAttachShader(shaderProgram, fragmentShader);
-            glLinkProgram(shaderProgram);
-
-            glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-            if(!success)
-            {
-                glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-                std::cerr << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
-            }
-
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-
-        /**
-         * Params:
-         * 1) the OpenGL primitive type we would like to draw
-         * 2) specifies the starting index of the vertex array we'd like to draw
-         * 3) how many vertices we want to draw, which is 3 (we only render 1 triangle from our data, which is exactly 3 vertices long).
-         */
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+    /**
+     * Params:
+     * 1) the OpenGL primitive type we would like to draw
+     * 2) specifies the starting index of the vertex array we'd like to draw
+     * 3) how many vertices we want to draw, which is 3 (we only render 1 triangle from our data, which is exactly 3 vertices long).
+     */
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void Engine::Run() {

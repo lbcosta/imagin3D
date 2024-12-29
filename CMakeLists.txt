@@ -9,13 +9,12 @@ include_directories(libs/glfw/include)
 
 # GLAD
 include_directories(libs/glad/include)
-set(GLAD_SRC libs/glad/src/glad.c
-        src/engine/Engine.cpp
-        src/engine/Engine.h)
+set(GLAD_SRC libs/glad/src/glad.c)
 
 # Project Files
-file(GLOB PROJECT_SOURCES src/*.cpp)
+file(GLOB_RECURSE PROJECT_SOURCES src/*.cpp)
 add_executable(imagin3D ${PROJECT_SOURCES} ${GLAD_SRC})
+
 
 # Link Libraries
 target_link_libraries(imagin3D glfw)
