@@ -9,28 +9,31 @@ Engine::Engine(const int window_width, const int window_height) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+        #ifdef __APPLE__
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        #endif
+
         GLFWwindow* window = glfwCreateWindow(window_width, window_height, "Imagin3D", nullptr, nullptr);
         if (window == nullptr)
         {
             std::cerr << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
+            return;
         }
+
         glfwMakeContextCurrent(window);
-
-    // Initialize GLAD
-        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-        {
-            std::cerr << "Failed to initialize GLAD" << std::endl;
-        }
-
-    // Configure Viewport
-        glViewport(0, 0, window_width, window_height);
         glfwSetFramebufferSizeCallback(window,
             [](GLFWwindow*, const int width, const int height) -> void {
                 glViewport(0, 0, width, height);
             }
         );
 
+    // Initialize GLAD
+        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+        {
+            std::cerr << "Failed to initialize GLAD" << std::endl;
+            return;
+        }
 
     this->window = window;
 }
