@@ -5,7 +5,7 @@ constexpr unsigned int WINDOW_HEIGHT = 600;
 
 int main()
 {
-    auto engine = Engine(WINDOW_WIDTH, WINDOW_HEIGHT);
+    Engine engine(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     /*
      *

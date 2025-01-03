@@ -14,8 +14,7 @@ private:
     GLFWwindow* window;
     void ProcessInput() const;
     void Render();
-    void Triangle();
-    void Rectangle();
+    void Init();
 };
 
 
